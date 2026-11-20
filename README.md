@@ -43,6 +43,8 @@ Training run from [`notebooks/train_yolov8.ipynb`](notebooks/train_yolov8.ipynb)
 |---|---|---|---|---|
 | 190 blurred images, 254 planes | **0.796** | **0.579** | **0.642** | **0.266** |
 
+The trained model from this run is included as [`weights/best.pt`](weights/best.pt).
+
 - After training, the model **detects aeroplanes in blurred images**:
 
 ![More YOLOv8 detections on blurred validation images](results/val_batch2_pred.jpg)
@@ -60,6 +62,8 @@ Precision–recall and confidence curves are in the [report](report/Blurred_Imag
 ├── notebooks/
 │   ├── train_yolov8.ipynb                         # trains YOLOv8n on the blurred dataset (Colab)
 │   └── generate_labels_and_predict.ipynb          # labels clean images with a pretrained model, runs YOLOv8 predictions
+├── weights/
+│   └── best.pt                                    # trained YOLOv8n weights (1 class: plane)
 ├── scripts/
 │   └── preprocess_images.py                       # resize images and convert them to greyscale
 ├── turbulence_generator/                          # MATLAB turbulence simulator (Chimitt & Chan, BSD-3)
@@ -70,6 +74,23 @@ Precision–recall and confidence curves are in the [report](report/Blurred_Imag
 └── results/
     ├── val_batch1_pred.jpg                        # validation predictions
     └── val_batch2_pred.jpg
+```
+
+## Trained weights
+
+[`weights/best.pt`](weights/best.pt) holds the YOLOv8n model from the training run above, with one class, `plane`. It was trained from scratch for 5 epochs at 640 px (batch 16) with Ultralytics 8.0.115, in June 2023.
+
+Run it on your own blurred images:
+
+```bash
+pip install ultralytics
+```
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("weights/best.pt")
+results = model.predict("path/to/blurred_images", save=True)   # annotated images go to runs/detect/predict
 ```
 
 ## How to reproduce
@@ -115,7 +136,7 @@ model.train(data="data.yaml", epochs=5)
 
 `data.yaml` should point to your blurred `train/` and `val/` folders (YOLO-format labels) and list one class, `plane`.
 
-> The ~1,000-image blurred dataset and the trained `best.pt` weights are not included in this repository.
+> The ~1,000-image blurred dataset is not included in this repository.
 
 ## Tech stack
 
